@@ -742,7 +742,7 @@ namespace EManagersLib.API {
     /// Prop Wrapper for EML prop framework
     /// </summary>
     public sealed unsafe class EMLPropWrapper : PropWrapper {
-        private const string EPROPMANAGER = "EManagersLib.EPropManager";
+        private const string EPROPMANAGER = "EManagersLib.EPropManager,EManagersLib";
 
         internal delegate T Getter<T>();
         internal delegate bool CREATEPROPAPI(PropManager instance, out uint prop, ref Randomizer randomizer, PropInfo info, Vector3 position, float angle, bool single);

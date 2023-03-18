@@ -158,8 +158,8 @@ namespace EManagersLib.API {
                 }
             }
             if (m_isEMLInstalled) {
-                Type eToolBase = Type.GetType("EManagersLib.EToolBase");
-                Type ePropInstance = Type.GetType("EManagersLib.EPropInstance");
+                Type eToolBase = Type.GetType("EManagersLib.API.EToolBase,EManagersLib.API");
+                Type ePropInstance = Type.GetType("EManagersLib.EPropInstance,EManagersLib");
                 MethodInfo renderInstance = ePropInstance.GetMethod("RenderInstance", BindingFlags.Public | BindingFlags.Static, Type.DefaultBinder,
                     new Type[] { typeof(RenderManager.CameraInfo), typeof(PropInfo), typeof(InstanceID), typeof(Vector3), typeof(float),
                              typeof(float), typeof(Color), typeof(Vector4), typeof(bool) }, null);
