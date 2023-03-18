@@ -78,7 +78,11 @@ namespace EManagersLib.Patches {
             }
         }
 
+#if ENABLEEIGHTYONE
         private static IEnumerable<CodeInstruction> SimulationStepTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) => GenericToolBaseCompat(ReplaceConstants(instructions), il);
+#else
+        private static IEnumerable<CodeInstruction> SimulationStepTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) => GenericToolBaseCompat(instructions, il);
+#endif
 
         internal void Enable(Harmony harmony) {
             try {
