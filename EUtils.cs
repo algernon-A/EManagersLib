@@ -216,10 +216,12 @@ namespace EManagersLib {
         }
 
         internal static void LateEnablePatches() {
+#if ENABLEEIGHTYONE
             Harmony harmony = new Harmony(EModule.HARMONYID);
             if (ESettings.m_electrifiedRoad) {
                 new ERoadBaseAIPatch().Enable(harmony);
             }
+#endif
         }
 
         internal static void DisablePatches() {
@@ -258,17 +260,19 @@ namespace EManagersLib {
         }
 
         internal static void LateDisablePatches() {
+#if ENABLEEIGHTYONE
             Harmony harmony = new Harmony(EModule.HARMONYID);
             if (ESettings.m_electrifiedRoad) {
                 new ERoadBaseAIPatch().Disable(harmony);
             }
-        }
+#endif
+    }
 
-        /// <summary>
-        /// Enables Harmony patches for other mods. Do NOT call before OnCreated() - especially DO NOT USE DoOnHarmonyReady.
-        /// Mod load and instantiation order is undefined at OnEnabled, and CitiesHarmony DoOnHarmonyReady may - and often does - trigger this BEFORE target mod is lodaed.
-        /// </summary>
-        internal static void EnableModPatches() {
+    /// <summary>
+    /// Enables Harmony patches for other mods. Do NOT call before OnCreated() - especially DO NOT USE DoOnHarmonyReady.
+    /// Mod load and instantiation order is undefined at OnEnabled, and CitiesHarmony DoOnHarmonyReady may - and often does - trigger this BEFORE target mod is lodaed.
+    /// </summary>
+    internal static void EnableModPatches() {
 #if !ENABLEEIGHTYONE
             Harmony harmony = new Harmony(EModule.HARMONYID);
             new E81TilesCompatPatch().Enable(harmony);
