@@ -60,9 +60,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EOptionPanel.cs" />
-    <Compile Include="EArray32.cs" />
-    <Compile Include="EEffectInfo.cs" />
     <Compile Include="EInstanceID.cs" />
     <Compile Include="EKeyBinding.cs" />
     <Compile Include="EMath.cs" />
