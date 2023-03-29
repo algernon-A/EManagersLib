@@ -1,8 +1,6 @@
 ﻿using ColossalFramework.PlatformServices;
 using EManagersLib.Extra;
 using EManagersLib.Patches;
-using EManagersLib.Patches.ElectrifiedRoad;
-using EManagersLib.Patches.OutsideConnection;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -13,11 +11,13 @@ using System.Reflection.Emit;
 using System.Threading;
 using UnityEngine;
 
-namespace EManagersLib {
+namespace EManagersLib
+{
     /// <summary>
     /// This class provides public API to ensure that mods using this library functions correctly
     /// </summary>
-    public static class EUtils {
+    public static class EUtils
+    {
         private const string m_debugLogFile = "oEManagerDebug.log";
         public delegate U RefGetter<U>();
 
@@ -36,13 +36,17 @@ namespace EManagersLib {
         /// <typeparam name="T">Name of the private or protected field</typeparam>
         /// <param name="field"></param>
         /// <returns>Returns the delegate for fast getter to private or protected fields</returns>
-        public static Func<S, T> CreateGetter<S, T>(FieldInfo field) {
+        public static Func<S, T> CreateGetter<S, T>(FieldInfo field)
+        {
             string methodName = field.ReflectedType.FullName + ".get_" + field.Name;
             DynamicMethod setterMethod = new DynamicMethod(methodName, typeof(T), new Type[1] { typeof(S) }, true);
             ILGenerator gen = setterMethod.GetILGenerator();
-            if (field.IsStatic) {
+            if (field.IsStatic)
+            {
                 gen.Emit(OpCodes.Ldsfld, field);
-            } else {
+            }
+            else
+            {
                 gen.Emit(OpCodes.Ldarg_0);
                 gen.Emit(OpCodes.Ldfld, field);
             }
@@ -50,7 +54,8 @@ namespace EManagersLib {
             return (Func<S, T>)setterMethod.CreateDelegate(typeof(Func<S, T>));
         }
 
-        public static RefGetter<U> CreatePrefabRefGetter<U>(string s_field) {
+        public static RefGetter<U> CreatePrefabRefGetter<U>(string s_field)
+        {
             var prefab = typeof(PrefabCollection<PropInfo>);
             var fi = prefab.GetField(s_field, BindingFlags.NonPublic | BindingFlags.Static);
             if (fi == null) throw new MissingFieldException(prefab.Name, s_field);
@@ -70,14 +75,18 @@ namespace EManagersLib {
         /// <typeparam name="T"></typeparam>
         /// <param name="field"></param>
         /// <returns>Returns the delegate for fast setter of private or protected fields</returns>
-        public static Action<S, T> CreateSetter<S, T>(FieldInfo field) {
+        public static Action<S, T> CreateSetter<S, T>(FieldInfo field)
+        {
             string methodName = field.ReflectedType.FullName + ".set_" + field.Name;
             DynamicMethod setterMethod = new DynamicMethod(methodName, null, new Type[2] { typeof(S), typeof(T) }, true);
             ILGenerator gen = setterMethod.GetILGenerator();
-            if (field.IsStatic) {
+            if (field.IsStatic)
+            {
                 gen.Emit(OpCodes.Ldarg_1);
                 gen.Emit(OpCodes.Stsfld, field);
-            } else {
+            }
+            else
+            {
                 gen.Emit(OpCodes.Ldarg_0);
                 gen.Emit(OpCodes.Ldarg_1);
                 gen.Emit(OpCodes.Stfld, field);
@@ -86,9 +95,11 @@ namespace EManagersLib {
             return (Action<S, T>)setterMethod.CreateDelegate(typeof(Action<S, T>));
         }
 
-        internal static IEnumerable<CodeInstruction> DebugPatchOutput(IEnumerable<CodeInstruction> instructions, MethodBase method) {
+        internal static IEnumerable<CodeInstruction> DebugPatchOutput(IEnumerable<CodeInstruction> instructions, MethodBase method)
+        {
             ELog("---- " + method.Name + " ----");
-            foreach (var code in instructions) {
+            foreach (var code in instructions)
+            {
                 ELog(code.ToString());
                 yield return code;
             }
@@ -97,12 +108,14 @@ namespace EManagersLib {
 
         private static readonly Stopwatch profiler = new Stopwatch();
         private static readonly object fileLock = new object();
-        internal static void CreateDebugFile() {
+        internal static void CreateDebugFile()
+        {
             profiler.Start();
             /* Create Debug Log File */
             string path = Path.Combine(Application.dataPath, m_debugLogFile);
             using (FileStream debugFile = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
-            using (StreamWriter sw = new StreamWriter(debugFile)) {
+            using (StreamWriter sw = new StreamWriter(debugFile))
+            {
                 sw.WriteLine($"--- {EModule.m_modName} {EModule.m_modVersion} Debug File ---");
                 sw.WriteLine(Environment.OSVersion);
                 sw.WriteLine($"C# CLR Version {Environment.Version}");
@@ -111,31 +124,39 @@ namespace EManagersLib {
             }
         }
 
-        internal static void ELog(string msg) {
+        internal static void ELog(string msg)
+        {
             var ticks = profiler.ElapsedTicks;
             Monitor.Enter(fileLock);
-            try {
+            try
+            {
                 using (FileStream debugFile = new FileStream(Path.Combine(Application.dataPath, m_debugLogFile), FileMode.Append))
-                using (StreamWriter sw = new StreamWriter(debugFile)) {
+                using (StreamWriter sw = new StreamWriter(debugFile))
+                {
                     sw.WriteLine($"{(ticks / Stopwatch.Frequency):n0}:{(ticks % Stopwatch.Frequency):D7}-{new StackFrame(1, true).GetMethod().Name} ==> {msg}");
                 }
-            } finally {
+            }
+            finally
+            {
                 Monitor.Exit(fileLock);
             }
         }
 
-        public readonly struct ModInfo {
+        public readonly struct ModInfo
+        {
             public readonly ulong fileID;
             public readonly string name;
             public readonly string specialMsg;
             public readonly bool inclusive;
-            public ModInfo(ulong modID, string modName, bool isInclusive) {
+            public ModInfo(ulong modID, string modName, bool isInclusive)
+            {
                 fileID = modID;
                 name = modName;
                 specialMsg = null;
                 inclusive = isInclusive;
             }
-            public ModInfo(ulong modID, string modName, bool isInclusive, string extraMsg) {
+            public ModInfo(ulong modID, string modName, bool isInclusive, string extraMsg)
+            {
                 fileID = modID;
                 name = modName;
                 specialMsg = extraMsg;
@@ -162,11 +183,15 @@ namespace EManagersLib {
             new ModInfo(531738447, @"CSL Show More Limits", true)
         };
 
-        internal static bool CheckIncompatibleMods() {
+        internal static bool CheckIncompatibleMods()
+        {
             string errorMsg = "";
-            foreach (var mod in PlatformService.workshop.GetSubscribedItems()) {
-                for (int i = 0; i < IncompatibleMods.Length; i++) {
-                    if (mod.AsUInt64 == IncompatibleMods[i].fileID) {
+            foreach (var mod in PlatformService.workshop.GetSubscribedItems())
+            {
+                for (int i = 0; i < IncompatibleMods.Length; i++)
+                {
+                    if (mod.AsUInt64 == IncompatibleMods[i].fileID)
+                    {
                         errorMsg += '[' + IncompatibleMods[i].name + ']' + @" detected. " +
                             (IncompatibleMods[i].inclusive ? "EML already includes the same functionality. " : "This mod is incompatible with EML. ") +
                             (IncompatibleMods[i].specialMsg is null ? "\n" : IncompatibleMods[i].specialMsg + "\n\n");
@@ -174,7 +199,8 @@ namespace EManagersLib {
                     }
                 }
             }
-            if (errorMsg.Length > 0) {
+            if (errorMsg.Length > 0)
+            {
                 EDialog.MessageBox("EML detected incompatible mods", errorMsg);
                 ELog("EML detected incompatible mods, please remove the following mentioned mods\n" + errorMsg);
                 return false;
@@ -182,101 +208,42 @@ namespace EManagersLib {
             return true;
         }
 
-        internal static void EnablePatches() {
+        internal static void EnablePatches()
+        {
             Harmony harmony = new Harmony(EModule.HARMONYID);
             new EPropManagerPatch().Enable(harmony);
             new EDefaultToolPatch().Enable(harmony);
             new EBuildingDecorationPatch().Enable(harmony);
-            new EBulldozePatch().Enable(harmony);
-            new EDistrictManagerPatch().Enable(harmony);
             new EDisasterHelpersPatch().Enable(harmony);
             new EInstanceManagerPatch().Enable(harmony);
             new EPropToolPatch().Enable(harmony);
             new EBuildingAIPatch().Enable(harmony);
             new ETreeToolPatch().Enable(harmony);
             new EBuildingToolPatch().Enable(harmony);
-#if ENABLEEIGHTYONE
-            new EAreaWrapperPatch().Enable(harmony);
-            new EGameAreaManagerPatch().Enable(harmony);
-            new EGameAreaToolPatch().Enable(harmony);
-            new EGameAreaInfoPanel().Enable(harmony);
-            new ENaturalResourceManagerPatch().Enable(harmony);
-            new ENetManagerPatch().Enable(harmony);
-            new ETerrainManagerPatch().Enable(harmony);
-            new EZoneManagerPatch().Enable(harmony);
-            new EZoneBlockPatch().Enable(harmony);
-            new EZoneToolPatch().Enable(harmony);
-            new EBuildingPatch().Enable(harmony);
-            new EDistrictToolPatch().Enable(harmony);
-            new EElectricityManagerPatch().Enable(harmony);
-            new EImmaterialResourceManagerPatch().Enable(harmony);
-            new EWaterManagerPatch().Enable(harmony);
-#endif
-            new ENetworkAIPatches().Enable(harmony);
         }
 
-        internal static void LateEnablePatches() {
-#if ENABLEEIGHTYONE
-            Harmony harmony = new Harmony(EModule.HARMONYID);
-            if (ESettings.m_electrifiedRoad) {
-                new ERoadBaseAIPatch().Enable(harmony);
-            }
-#endif
-        }
-
-        internal static void DisablePatches() {
+        internal static void DisablePatches()
+        {
             Harmony harmony = new Harmony(EModule.HARMONYID);
             new EPropManagerPatch().Disable(harmony);
             new EBulldozePatch().Disable(harmony);
             new EDefaultToolPatch().Disable(harmony);
             new EBuildingDecorationPatch().Disable(harmony);
-            new EDistrictManagerPatch().Disable(harmony);
             new EDisasterHelpersPatch().Disable(harmony);
             new EInstanceManagerPatch().Disable(harmony);
             new EPropToolPatch().Disable(harmony);
             new EBuildingAIPatch().Disable(harmony);
             new ETreeToolPatch().Disable(harmony);
             new EBuildingToolPatch().Disable(harmony);
-#if ENABLEEIGHTYONE
-            new EAreaWrapperPatch().Disable(harmony);
-            new EGameAreaManagerPatch().Disable(harmony);
-            new EGameAreaToolPatch().Disable(harmony);
-            new EGameAreaInfoPanel().Disable(harmony);
-            new ENaturalResourceManagerPatch().Disable(harmony);
-            new ENetManagerPatch().Disable(harmony);
-            new ETerrainManagerPatch().Disable(harmony);
-            new EZoneManagerPatch().Disable(harmony);
-            new EZoneBlockPatch().Disable(harmony);
-            new EZoneToolPatch().Disable(harmony);
-            new EBuildingPatch().Disable(harmony);
-            new EDistrictToolPatch().Disable(harmony);
-            new EElectricityManagerPatch().Disable(harmony);
-            new EImmaterialResourceManagerPatch().Disable(harmony);
-            new EWaterManagerPatch().Disable(harmony);
-#else
-            new E81TilesCompatPatch().Disable(harmony);
-#endif
-            new ENetworkAIPatches().Disable(harmony);
         }
 
-        internal static void LateDisablePatches() {
-#if ENABLEEIGHTYONE
+        /// <summary>
+        /// Enables Harmony patches for other mods. Do NOT call before OnCreated() - especially DO NOT USE DoOnHarmonyReady.
+        /// Mod load and instantiation order is undefined at OnEnabled, and CitiesHarmony DoOnHarmonyReady may - and often does - trigger this BEFORE target mod is lodaed.
+        /// </summary>
+        internal static void EnableModPatches()
+        {
             Harmony harmony = new Harmony(EModule.HARMONYID);
-            if (ESettings.m_electrifiedRoad) {
-                new ERoadBaseAIPatch().Disable(harmony);
-            }
-#endif
-    }
-
-    /// <summary>
-    /// Enables Harmony patches for other mods. Do NOT call before OnCreated() - especially DO NOT USE DoOnHarmonyReady.
-    /// Mod load and instantiation order is undefined at OnEnabled, and CitiesHarmony DoOnHarmonyReady may - and often does - trigger this BEFORE target mod is lodaed.
-    /// </summary>
-    internal static void EnableModPatches() {
-#if !ENABLEEIGHTYONE
-            Harmony harmony = new Harmony(EModule.HARMONYID);
-            new E81TilesCompatPatch().Enable(harmony);
-#endif
         }
     }
 }

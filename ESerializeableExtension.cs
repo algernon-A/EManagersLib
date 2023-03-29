@@ -347,13 +347,6 @@ namespace EManagersLib {
             } catch (Exception e) {
                 UnityEngine.Debug.LogException(e);
             }
-#if ENABLEEIGHTYONE
-            // Process 81 tiles data
-            EGameAreaManager.Serialize();
-            EDistrictManager.Serialize();
-            EElectricityManager.Serialize();
-            EWaterManager.Serialize();
-#endif
         }
 
         internal static void SaveData(string id, byte[] data) {

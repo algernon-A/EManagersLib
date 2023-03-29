@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using static EManagersLib.EZoneManager;
 
 namespace EManagersLib.Patches {
     internal readonly struct EBuildingToolPatch {
@@ -63,26 +62,7 @@ namespace EManagersLib.Patches {
             }
         }
 
-        private static IEnumerable<CodeInstruction> ReplaceConstants(IEnumerable<CodeInstruction> instructions) {
-            const float defHalfGrid = DEFGRID_RESOLUTION / 2f;
-            const float halfGrid = ZONEGRID_RESOLUTION / 2f;
-            foreach (var code in instructions) {
-                if (code.LoadsConstant(defHalfGrid)) {
-                    code.operand = halfGrid;
-                } else if (code.LoadsConstant(DEFGRID_RESOLUTION - 1)) {
-                    code.operand = ZONEGRID_RESOLUTION - 1;
-                } else if (code.LoadsConstant(DEFGRID_RESOLUTION)) {
-                    code.operand = ZONEGRID_RESOLUTION;
-                }
-                yield return code;
-            }
-        }
-
-#if ENABLEEIGHTYONE
-        private static IEnumerable<CodeInstruction> SimulationStepTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) => GenericToolBaseCompat(ReplaceConstants(instructions), il);
-#else
         private static IEnumerable<CodeInstruction> SimulationStepTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) => GenericToolBaseCompat(instructions, il);
-#endif
 
         internal void Enable(Harmony harmony) {
             try {
