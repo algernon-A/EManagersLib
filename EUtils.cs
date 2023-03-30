@@ -214,6 +214,8 @@ namespace EManagersLib
             new EPropManagerPatch().Enable(harmony);
             new EDefaultToolPatch().Enable(harmony);
             new EBuildingDecorationPatch().Enable(harmony);
+            new EBulldozePatch().Enable(harmony);
+            new EDistrictManagerPatch().Enable(harmony);
             new EDisasterHelpersPatch().Enable(harmony);
             new EInstanceManagerPatch().Enable(harmony);
             new EPropToolPatch().Enable(harmony);
@@ -229,6 +231,7 @@ namespace EManagersLib
             new EBulldozePatch().Disable(harmony);
             new EDefaultToolPatch().Disable(harmony);
             new EBuildingDecorationPatch().Disable(harmony);
+            new EDistrictManagerPatch().Disable(harmony);
             new EDisasterHelpersPatch().Disable(harmony);
             new EInstanceManagerPatch().Disable(harmony);
             new EPropToolPatch().Disable(harmony);

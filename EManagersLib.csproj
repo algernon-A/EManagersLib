@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EDistrictManager.cs" />
     <Compile Include="EInstanceID.cs" />
     <Compile Include="EKeyBinding.cs" />
     <Compile Include="EMath.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="IEManagersInit.cs" />
     <Compile Include="LegacyDataHandlers\PropPainter\PropPainterDataContainer.cs" />
     <Compile Include="Patches\EBuildingToolPatch.cs" />
+    <Compile Include="Patches\EDistrictManagerPatch.cs" />
     <Compile Include="Patches\ETreeToolPatch.cs" />
     <Compile Include="Patches\EBuildingAIPatch.cs" />
     <Compile Include="Patches\EPropToolPatch.cs" />

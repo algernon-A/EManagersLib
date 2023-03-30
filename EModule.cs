@@ -9,7 +9,7 @@ using System.IO;
 
 namespace EManagersLib {
     public sealed class EModule : IUserMod, ILoadingExtension {
-        internal const string m_modVersion = "1.0.10";
+        internal const string m_modVersion = "1.0.10.1";
         internal const string m_assemblyVersion = m_modVersion + ".*";
         internal const string m_modName = "Extended Managers";
         internal const string m_modDesc = "A library that extends the existing framework in Cities Skylines";
